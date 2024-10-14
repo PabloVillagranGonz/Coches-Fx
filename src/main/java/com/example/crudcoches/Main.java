@@ -24,17 +24,5 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
-
-        MongoClient con;
-
-        try{
-            con = ConnectionDB.conectar();
-
-            MongoDatabase database = con.getDatabase("concesionario-coches");// Creamos la base
-
-            MongoCollection<Document> collection = database.getCollection("coches");
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
     }
 }

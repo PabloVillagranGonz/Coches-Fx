@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import org.bson.Document;
 
 public class CochesController {
 
@@ -36,6 +37,18 @@ public class CochesController {
         listCoches.getItems().addAll("Ranchera", "Deportivo", "Todoterreno", "SUV", "Compacto")
     }*/
 
+    private void agregarCoche(){
+        String marca = txtMarca.getText();
+        String modelo = txtModelo.getText();
+        String matricula = txtMatricula.getText();
+
+        Document coche = new Document("marca", marca)
+                .append("modelo", modelo)
+                .append("matricula", matricula);
+
+        collection.insertOne(coche); // Inserta el coche en la colección
+        cargarCoches(); // Método que carga la lista de coches (debes implementarlo)
+    }
 
 }
 
