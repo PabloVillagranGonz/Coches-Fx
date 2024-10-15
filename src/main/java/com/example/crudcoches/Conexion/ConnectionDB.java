@@ -27,17 +27,35 @@ public class ConnectionDB {
         }
     }
 
-    public void connectToDatabase () {
-        MongoClient mongoClient;
-        MongoDatabase database;
-        MongoCollection<Document> collection;
 
-        try {
-            mongoClient = ConnectionDB.conectar();
-            database = mongoClient.getDatabase("concesionario-coches");
-            collection = database.getCollection("coches");
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+    public void crearBaseYColeccion() {
+        MongoClient mongoClient = conectar();
+
+        if (mongoClient != null) {
+            try {
+                // Accediendo a la base de datos "concesionario-coches"
+                MongoDatabase database = mongoClient.getDatabase("concesionario-coches");
+
+                // Accediendo a la colección "coches"
+                MongoCollection<Document> collection = database.getCollection("coches");
+
+                // Crear un documento de ejemplo (para insertar en la colección y así crearla)
+                Document coche = new Document("marca", "Toyota")
+                        .append("modelo", "Corolla")
+                        .append("año", 2020)
+                        .append("precio", 20000);
+
+                // Insertar el documento en la colección
+                collection.insertOne(coche);
+
+                System.out.println("Base de datos 'concesionario-coches' y colección 'coches' creadas exitosamente con un documento.");
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            } finally {
+                desconectar(mongoClient);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión con la base de datos.");
         }
     }
 

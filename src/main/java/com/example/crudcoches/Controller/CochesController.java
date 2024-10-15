@@ -1,5 +1,10 @@
 package com.example.crudcoches.Controller;
 import com.example.crudcoches.Clases.Tipo;
+import com.example.crudcoches.Conexion.ConnectionDB;
+import com.example.crudcoches.DAO.CochesDAO;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -21,7 +26,7 @@ public class CochesController {
     private Button btnNuevo;
 
     @FXML
-    private ListView<Tipo> listCoches;
+    private ListView<String> listCoches;
 
     @FXML
     private TextField txtMarca;
@@ -32,23 +37,50 @@ public class CochesController {
     @FXML
     private TextField txtModelo;
 
+    private MongoCollection<Document> collection;
 
-    /*public void initialize() {
-        listCoches.getItems().addAll("Ranchera", "Deportivo", "Todoterreno", "SUV", "Compacto")
-    }*/
+    private CochesDAO cochesDAO;
+
+
+    public void initialize() {
+        MongoClient mongoClient = ConnectionDB.conectar(); // Obtener el MongoClient
+
+        // Inicializar el DAO de coches pasando el cliente
+        cochesDAO = new CochesDAO(mongoClient.getDatabase("concesionario-coches"));
+
+        // Cargar coches desde la base de datos al iniciar la vista
+        cargarCoches();
+    }
+
 
     private void agregarCoche(){
         String marca = txtMarca.getText();
         String modelo = txtModelo.getText();
         String matricula = txtMatricula.getText();
 
-        Document coche = new Document("marca", marca)
-                .append("modelo", modelo)
-                .append("matricula", matricula);
+        if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty()){
+            Document coche = new Document("marca", marca).append("modelo", modelo).append("matricula", matricula);
 
-        collection.insertOne(coche); // Inserta el coche en la colección
-        cargarCoches(); // Método que carga la lista de coches (debes implementarlo)
+            collection.insertOne(coche);
+
+            txtMarca.clear();
+            txtModelo.clear();
+            txtMatricula.clear();
+
+            cargarCoches();
+        } else {
+            System.out.println("Por favor, rellena todos los campos");
+        }
     }
+    private void cargarCoches() {
+        listCoches.getItems().clear(); // Limpiar la lista antes de recargar
+
+        for (Document doc : collection.find()) {
+            String coche = doc.getString("marca") + " - " + doc.getString("modelo") + " - " + doc.getString("matricula");
+            listCoches.getItems().add(coche); // Agregar cada coche al ListView
+        }
+    }
+
 
 }
 

@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="674.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="674.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.crudcoches.Controller.CochesController">
    <children>
       <ListView fx:id="listCoches" layoutX="268.0" layoutY="233.0" prefHeight="25.0" prefWidth="209.0" />
       <Label layoutX="194.0" layoutY="49.0" text="CRUD Coches" textFill="#004dff">
