@@ -1,17 +1,18 @@
 package com.example.crudcoches.Clases;
 
 public class Coches {
-    String matricula;
-    String marca;
-    String modelo;
 
-    public Coches() {
-    }
+    public String matricula;
+    public String marca;
+    public String modelo;
 
     public Coches(String matricula, String marca, String modelo) {
         this.matricula = matricula;
         this.marca = marca;
         this.modelo = modelo;
+    }
+
+    public Coches() {
     }
 
     public String getMatricula() {
@@ -32,10 +33,6 @@ public class Coches {
 
     public String getModelo() {
         return modelo;
-    }
-
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
     }
 
     @Override

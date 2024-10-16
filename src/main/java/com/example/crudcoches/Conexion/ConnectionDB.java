@@ -11,7 +11,6 @@ public class ConnectionDB {
     public static MongoClient conectar() {
         try {
             MongoClient conexion = new MongoClient(new MongoClientURI("mongodb://admin:1234@localhost:27017/?authSource=admin"));
-
             System.out.println("Conectada correctamente a la BD");
             return conexion;
         } catch (Exception e) {
@@ -39,16 +38,8 @@ public class ConnectionDB {
                 // Accediendo a la colección "coches"
                 MongoCollection<Document> collection = database.getCollection("coches");
 
-                // Crear un documento de ejemplo (para insertar en la colección y así crearla)
-                Document coche = new Document("marca", "Toyota")
-                        .append("modelo", "Corolla")
-                        .append("año", 2020)
-                        .append("precio", 20000);
 
-                // Insertar el documento en la colección
-                collection.insertOne(coche);
-
-                System.out.println("Base de datos 'concesionario-coches' y colección 'coches' creadas exitosamente con un documento.");
+                System.out.println("Base de datos 'concesionario-coches' y colección 'coches' creadas exitosamente.");
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             } finally {
