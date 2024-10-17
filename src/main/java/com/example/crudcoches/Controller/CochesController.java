@@ -14,7 +14,7 @@ import java.util.List;
 public class CochesController {
 
     @FXML
-    private Button btnBorrarCampos;
+    private Button btnBorrar;
     @FXML
     private Button btnEliminar;
 
@@ -60,7 +60,8 @@ public class CochesController {
 
             cochesDAO = new CochesDAO(mongoClient.getDatabase("concesionario-coches"));
 
-            // Configurar las columnas de la tabla
+            // Configuramos las columnas de la tabla
+
             colMatricula.setCellValueFactory(cellData ->
                     new SimpleStringProperty(cellData.getValue().getMatricula()));
             colMarca.setCellValueFactory(cellData ->
@@ -68,7 +69,6 @@ public class CochesController {
             colModelo.setCellValueFactory(cellData ->
                     new SimpleStringProperty(cellData.getValue().getModelo()));
 
-            // Cargar coches al iniciar la vista
             cargarCoches();
         } else {
             // Mensaje de error si no se pudo conectar a la base de datos
@@ -76,25 +76,11 @@ public class CochesController {
         }
     }
     private void cargarCoches() {
-        coches = cochesDAO.cargarCoches(); // Cargar coches desde el DAO
-        idTablaCoches.getItems().clear(); // Limpiar la tabla antes de añadir nuevos elementos
-        idTablaCoches.getItems().addAll(coches); // Añadir todos los coches a la tabla
+        coches = cochesDAO.cargarCoches(); // Cargamos los cochesDAO
+        idTablaCoches.getItems().clear(); // Limpiamos la tabla antes de seguir
+        idTablaCoches.getItems().addAll(coches); // Añadimos todos los coches a la tabla
     }
 
-    @FXML
-    void onCLickBorrarCampos(ActionEvent event) {
-        // Limpiar los campos de texto
-        txtMarca.clear();
-        txtModelo.clear();
-        txtMatricula.clear();
-
-        // Opcionalmente, mostrar una alerta de confirmación
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Datos Borrados");
-        alert.setHeaderText(null);
-        alert.setContentText("Los campos han sido borrados.");
-        alert.showAndWait();
-    }
 
     @FXML
     void onClicEliminar(ActionEvent event) {
@@ -110,7 +96,7 @@ public class CochesController {
                 alerta.showAndWait();// Limpiar los campos de texto y actualizar la lista
                 txtMatricula.clear();
                 cargarCoches();
-            } else { // No encontramos el coche con dicha matricula
+            } else { // Mostramos mensaje de error que el coche con dicha matricula no ha sido encontrado
                 Alert alerta = new Alert(Alert.AlertType.ERROR);
                 alerta.setTitle("Error al Eliminar");
                 alerta.setHeaderText(null);
@@ -130,16 +116,22 @@ public class CochesController {
     @FXML
     void onClicModificar(ActionEvent event) {
         String matricula = txtMatricula.getText();
-        if (!matricula.isEmpty()){
-            boolean encontrado = cochesDAO.modificarCoche(matricula, new Coches());
+        String nuevaMarca = txtMarca.getText();
+        String nuevoModelo = txtModelo.getText();
 
-            if (encontrado){
+        if (!matricula.isEmpty() && !nuevaMarca.isEmpty() && !nuevoModelo.isEmpty()) {
+            Coches cocheModificado = new Coches(matricula, nuevaMarca, nuevoModelo);
+            boolean encontrado = cochesDAO.modificarCoche(matricula, cocheModificado);
+
+            if (encontrado) {
                 Alert alerta = new Alert(Alert.AlertType.INFORMATION);
                 alerta.setTitle("Coche modificado");
                 alerta.setHeaderText(null);
-                alerta.setContentText("El coche ha sido modificado correctamente");
+                alerta.setContentText("El coche ha sido modificado correctamente.");
                 alerta.showAndWait();
                 txtMatricula.clear();
+                txtMarca.clear();
+                txtModelo.clear();
                 cargarCoches();
             } else {
                 Alert alerta = new Alert(Alert.AlertType.ERROR);
@@ -152,10 +144,11 @@ public class CochesController {
             Alert alerta = new Alert(Alert.AlertType.WARNING);
             alerta.setTitle("Campo Vacío");
             alerta.setHeaderText(null);
-            alerta.setContentText("Por favor, rellene el campo matrícula.");
+            alerta.setContentText("Por favor, rellene todos los campos requeridos.");
             alerta.showAndWait();
         }
     }
+
 
     @FXML
     void onClicNuevo(ActionEvent event) {
@@ -184,7 +177,7 @@ public class CochesController {
 
             cargarCoches();
         } else {
-            // Alerta de campos vacios
+            // Alertamos que hay campos vacios
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Campos Vacíos");
             alert.setHeaderText(null);
@@ -193,4 +186,17 @@ public class CochesController {
             }
     }
 
+    public void onClicBorrar(ActionEvent actionEvent) {
+        // Limpiamos los campos de texto
+        txtMarca.clear();
+        txtModelo.clear();
+        txtMatricula.clear();
+
+        // Mostramos alerta de confirmacion
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Datos Borrados");
+        alert.setHeaderText(null);
+        alert.setContentText("Los campos han sido borrados.");
+        alert.showAndWait();
+    }
 }
