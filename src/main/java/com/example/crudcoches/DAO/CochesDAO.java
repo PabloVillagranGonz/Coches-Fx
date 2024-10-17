@@ -25,7 +25,8 @@ public class CochesDAO {
         try {
             Document doc = new Document("matricula", coche.getMatricula())
                     .append("marca", coche.getMarca())
-                    .append("modelo", coche.getModelo());
+                    .append("modelo", coche.getModelo())
+                    .append("tipo", coche.getTipo());
             collection.insertOne(doc);
         } catch (Exception e) {
             System.out.println("Error al insertar coche: " + e.getMessage());
@@ -40,7 +41,7 @@ public class CochesDAO {
     public boolean modificarCoche(String matricula, Coches coche) {
         Document query = new Document("matricula", matricula);
         Document update = new Document("$set", new Document("marca", coche.getMarca())
-                .append("modelo", coche.getModelo()));
+                .append("modelo", coche.getModelo()).append("tipo", coche.getTipo()));
         long modifiedCount = collection.updateOne(query, update).getModifiedCount();
         return modifiedCount > 0;
     }
@@ -52,9 +53,10 @@ public class CochesDAO {
                 String matricula = doc.getString("matricula");
                 String marca = doc.getString("marca");
                 String modelo = doc.getString("modelo");
+                String tipo = doc.getString("tipo");
 
 
-                Coches coche = new Coches(matricula, marca, modelo);
+                Coches coche = new Coches(matricula, marca, modelo, tipo);
                 cochesList.add(coche);
             }
         } catch (Exception e) {
@@ -62,10 +64,5 @@ public class CochesDAO {
         }
         return cochesList;
     }
-
-    private Tipo obtenerTipoPorId(String tipoId) {
-        return new Tipo(tipoId, "Nombre del Tipo");
-    }
-
 
 }

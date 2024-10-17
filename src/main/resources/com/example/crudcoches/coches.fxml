@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -11,7 +11,6 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="674.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.crudcoches.Controller.CochesController">
    <children>
-      <ListView fx:id="listCoches" layoutX="268.0" layoutY="233.0" prefHeight="25.0" prefWidth="209.0" />
       <Label layoutX="194.0" layoutY="49.0" text="CRUD Coches" textFill="#004dff">
          <font>
             <Font name="Bell MT" size="43.0" />
@@ -44,7 +43,7 @@
             <Font size="17.0" />
          </font>
       </Label>
-      <TableView fx:id="idTablaCoches" layoutX="173.0" layoutY="319.0" prefHeight="200.0" prefWidth="300.0">
+      <TableView fx:id="idTablaCoches" layoutX="173.0" layoutY="319.0" onMouseClicked="#onClickedMouse" prefHeight="200.0" prefWidth="300.0">
         <columns>
           <TableColumn fx:id="colMatricula" prefWidth="75.0" text="Matricula" />
           <TableColumn fx:id="colMarca" prefWidth="75.0" text="Marca" />
@@ -52,5 +51,11 @@
             <TableColumn fx:id="colTipo" prefWidth="75.0" text="Tipo" />
         </columns>
       </TableView>
+      <ComboBox fx:id="fxTipo" layoutX="269.0" layoutY="233.0" prefWidth="150.0" />
+      <Button fx:id="idSalir" layoutX="550.0" layoutY="184.0" mnemonicParsing="false" onAction="#onFinClick" text="Salir" textAlignment="CENTER" textFill="RED">
+         <font>
+            <Font size="29.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

@@ -4,12 +4,15 @@ import com.example.crudcoches.Clases.Coches;
 import com.example.crudcoches.Conexion.ConnectionDB;
 import com.example.crudcoches.DAO.CochesDAO;
 import com.mongodb.MongoClient;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Optional;
 
 public class CochesController {
 
@@ -37,7 +40,13 @@ public class CochesController {
     private TableColumn<Coches, String> colModelo;
 
     @FXML
-    private ListView<String> listCoches;
+    private TableColumn<Coches, String> colTipo;
+
+    @FXML
+    private ComboBox<String> fxTipo;
+
+    @FXML
+    private Button idSalir;
 
     @FXML
     private TextField txtMarca;
@@ -59,6 +68,7 @@ public class CochesController {
         if (mongoClient != null) { // Si es exitosa, seguimos
 
             cochesDAO = new CochesDAO(mongoClient.getDatabase("concesionario-coches"));
+            String[]lista= {"Todoterreno","Familiar","Suv","Deportivo", "Mini"};fxTipo.getItems().addAll(lista);
 
             // Configuramos las columnas de la tabla
 
@@ -68,6 +78,8 @@ public class CochesController {
                     new SimpleStringProperty(cellData.getValue().getMarca()));
             colModelo.setCellValueFactory(cellData ->
                     new SimpleStringProperty(cellData.getValue().getModelo()));
+            colTipo.setCellValueFactory(cellData ->
+                    new SimpleStringProperty(cellData.getValue().getTipo()));
 
             cargarCoches();
         } else {
@@ -94,6 +106,8 @@ public class CochesController {
                 alerta.setHeaderText(null);
                 alerta.setContentText("El coche ha sido eliminado correctamente");
                 alerta.showAndWait();// Limpiar los campos de texto y actualizar la lista
+                txtMarca.clear();
+                txtModelo.clear();
                 txtMatricula.clear();
                 cargarCoches();
             } else { // Mostramos mensaje de error que el coche con dicha matricula no ha sido encontrado
@@ -118,9 +132,10 @@ public class CochesController {
         String matricula = txtMatricula.getText();
         String nuevaMarca = txtMarca.getText();
         String nuevoModelo = txtModelo.getText();
+        String tipo = fxTipo.getSelectionModel().getSelectedItem();
 
-        if (!matricula.isEmpty() && !nuevaMarca.isEmpty() && !nuevoModelo.isEmpty()) {
-            Coches cocheModificado = new Coches(matricula, nuevaMarca, nuevoModelo);
+        if (!matricula.isEmpty() && !nuevaMarca.isEmpty() && !nuevoModelo.isEmpty() && !tipo.isEmpty()) {
+            Coches cocheModificado = new Coches(matricula, nuevaMarca, nuevoModelo, tipo);
             boolean encontrado = cochesDAO.modificarCoche(matricula, cocheModificado);
 
             if (encontrado) {
@@ -155,11 +170,12 @@ public class CochesController {
         String marca = txtMarca.getText();
         String modelo = txtModelo.getText();
         String matricula = txtMatricula.getText();
+        String tipo = fxTipo.getSelectionModel().getSelectedItem();
 
 
-        if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty()) {
+        if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty() && !tipo.isEmpty()) {
 
-            Coches nuevoCoche = new Coches(matricula, marca, modelo);
+            Coches nuevoCoche = new Coches(matricula, marca, modelo, tipo);
 
             cochesDAO.insertarCoche(nuevoCoche);
 
@@ -186,6 +202,18 @@ public class CochesController {
             }
     }
 
+    @FXML
+    void onFinClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmación de Cierre");
+        alert.setHeaderText("¿Estás seguro de que deseas cerrar la aplicación?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Platform.exit();
+        }
+    }
+
     public void onClicBorrar(ActionEvent actionEvent) {
         // Limpiamos los campos de texto
         txtMarca.clear();
@@ -198,5 +226,16 @@ public class CochesController {
         alert.setHeaderText(null);
         alert.setContentText("Los campos han sido borrados.");
         alert.showAndWait();
+    }
+
+    public void onClickedMouse(javafx.scene.input.MouseEvent mouseEvent) {
+        Coches coche =idTablaCoches.getSelectionModel().getSelectedItem();
+        if (coche != null) {
+            txtMatricula.setText(coche.matricula);
+            txtModelo.setText(coche.modelo);
+            txtMarca.setText(coche.marca);
+        } else {
+            System.out.println("No se ha seleccionado ningún coche.");
+        }
     }
 }
