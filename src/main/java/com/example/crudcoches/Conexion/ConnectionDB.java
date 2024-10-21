@@ -1,20 +1,37 @@
 package com.example.crudcoches.Conexion;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+    import com.mongodb.client.MongoClient;
+    import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+
+import java.io.FileInputStream;
+import java.util.Properties;
 
 
 public class ConnectionDB {
     public static MongoClient conectar() {
         try {
-            MongoClient conexion = new MongoClient(new MongoClientURI("mongodb://admin:1234@localhost:27017/?authSource=admin"));
-            System.out.println("Conectada correctamente a la BD");
+
+            Properties configuration = new Properties();
+
+            FileInputStream fis = new FileInputStream("src/main/resources/Configuration/database.properties");
+            configuration.load(fis);
+
+            String username = configuration.getProperty("username");
+            String password = configuration.getProperty("password");
+            String host = configuration.getProperty("host");
+            String port = configuration.getProperty("port");
+            String author = configuration.getProperty("author");
+            MongoClient conexion = MongoClients.create("mongodb://" + username + ":" + password + "@" + host + ":" + port + "/?authSource=" + author);
+
+            System.out.println("Conectado");
             return conexion;
-        } catch (Exception e) {
-            System.out.println("Conexión fallida: " + e.getMessage());
+        } catch (
+                Exception e) {
+            System.out.println("Conexión Fallida");
+            System.out.println(e);
             return null;
         }
     }

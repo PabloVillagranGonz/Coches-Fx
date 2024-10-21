@@ -3,14 +3,16 @@ package com.example.crudcoches.Controller;
 import com.example.crudcoches.Clases.Coches;
 import com.example.crudcoches.Conexion.ConnectionDB;
 import com.example.crudcoches.DAO.CochesDAO;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.awt.event.MouseEvent;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -68,20 +70,18 @@ public class CochesController {
         if (mongoClient != null) { // Si es exitosa, seguimos
 
             cochesDAO = new CochesDAO(mongoClient.getDatabase("concesionario-coches"));
-            String[]lista= {"Todoterreno","Familiar","Suv","Deportivo", "Mini"};fxTipo.getItems().addAll(lista);
+            String[]lista= {"Todoterreno","Familiar","Suv","Deportivo", "Mini"};
+            fxTipo.getItems().addAll(lista);
 
             // Configuramos las columnas de la tabla
 
-            colMatricula.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getMatricula()));
-            colMarca.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getMarca()));
-            colModelo.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getModelo()));
-            colTipo.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getTipo()));
+            colMatricula.setCellValueFactory(new PropertyValueFactory<>("matricula"));
+            colModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
+            colMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
+            colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
 
             cargarCoches();
+
         } else {
             // Mensaje de error si no se pudo conectar a la base de datos
             System.out.println("No se pudo establecer la conexión a la base de datos.");
@@ -109,6 +109,8 @@ public class CochesController {
                 txtMarca.clear();
                 txtModelo.clear();
                 txtMatricula.clear();
+                fxTipo.getSelectionModel().clearSelection();
+
                 cargarCoches();
             } else { // Mostramos mensaje de error que el coche con dicha matricula no ha sido encontrado
                 Alert alerta = new Alert(Alert.AlertType.ERROR);
@@ -205,7 +207,7 @@ public class CochesController {
     @FXML
     void onFinClick(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmación de Cierre");
+        alert.setTitle("Confirmación de cierre");
         alert.setHeaderText("¿Estás seguro de que deseas cerrar la aplicación?");
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -234,6 +236,7 @@ public class CochesController {
             txtMatricula.setText(coche.matricula);
             txtModelo.setText(coche.modelo);
             txtMarca.setText(coche.marca);
+            fxTipo.getSelectionModel().select(coche.getTipo());
         } else {
             System.out.println("No se ha seleccionado ningún coche.");
         }
