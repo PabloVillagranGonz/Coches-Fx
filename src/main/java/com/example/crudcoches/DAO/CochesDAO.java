@@ -1,7 +1,6 @@
 package com.example.crudcoches.DAO;
 
 import com.example.crudcoches.Clases.Coches;
-import com.example.crudcoches.Clases.Tipo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
