@@ -49,12 +49,11 @@ public class ConnectionDB {
 
         if (mongoClient != null) {
             try {
-                // Accediendo a la base de datos "concesionario-coches"
+                // Accedemos/creamos a la base de datos "concesionario-coches"
                 MongoDatabase database = mongoClient.getDatabase("concesionario-coches");
 
-                // Accediendo a la colección "coches"
+                // Accedemos/creamos a la colección "coches"
                 MongoCollection<Document> collection = database.getCollection("coches");
-
 
                 System.out.println("Base de datos 'concesionario-coches' y colección 'coches' creadas exitosamente.");
             } catch (Exception e) {
