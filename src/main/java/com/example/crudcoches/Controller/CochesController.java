@@ -3,14 +3,15 @@ package com.example.crudcoches.Controller;
 import com.example.crudcoches.Clases.Coches;
 import com.example.crudcoches.Conexion.ConnectionDB;
 import com.example.crudcoches.DAO.CochesDAO;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.awt.event.MouseEvent;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -87,35 +88,45 @@ public class CochesController {
             System.out.println("No se pudo establecer la conexión a la base de datos.");
         }
     }
+
     private void cargarCoches() {
         coches = cochesDAO.cargarCoches(); // Cargamos los cochesDAO
         idTablaCoches.getItems().clear(); // Limpiamos la tabla antes de seguir
         idTablaCoches.getItems().addAll(coches); // Añadimos todos los coches a la tabla
     }
 
-
     @FXML
     void onClicEliminar(ActionEvent event) {
         String matricula = txtMatricula.getText();
-        if (!matricula.isEmpty()){
-            boolean eliminado = cochesDAO.eliminarCoche(matricula);
+        String regexMatricula = "^[0-9]{4}[A-Z]{3}$";
 
-            if (eliminado){
-                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-                alerta.setTitle("Coche eliminado");
-                alerta.setHeaderText(null);
-                alerta.setContentText("El coche ha sido eliminado correctamente");
-                alerta.showAndWait();// Limpiar los campos de texto y actualizar la lista
-                txtMarca.clear();
-                txtModelo.clear();
-                txtMatricula.clear();
-                cargarCoches();
-            } else { // Mostramos mensaje de error que el coche con dicha matricula no ha sido encontrado
-                Alert alerta = new Alert(Alert.AlertType.ERROR);
-                alerta.setTitle("Error al Eliminar");
-                alerta.setHeaderText(null);
-                alerta.setContentText("No se encontró un coche con la matrícula especificada.");
-                alerta.showAndWait();
+        if (!matricula.isEmpty()){
+            if (matricula.matches(regexMatricula)) {
+                boolean eliminado = cochesDAO.eliminarCoche(matricula);
+
+                if (eliminado) {
+                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                    alerta.setTitle("Coche eliminado");
+                    alerta.setHeaderText(null);
+                    alerta.setContentText("El coche ha sido eliminado correctamente");
+                    alerta.showAndWait();// Limpiar los campos de texto y actualizar la lista
+                    txtMarca.clear();
+                    txtModelo.clear();
+                    txtMatricula.clear();
+                    fxTipo.getSelectionModel().clearSelection();
+                    cargarCoches();
+                } else { // Mostramos mensaje de error que el coche con dicha matricula no ha sido encontrado
+                    Alert alerta = new Alert(Alert.AlertType.ERROR);
+                    alerta.setTitle("Error al Eliminar");
+                    alerta.setHeaderText(null);
+                    alerta.setContentText("No se encontró un coche con la matrícula especificada.");
+                    alerta.showAndWait();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Matricula incorrecta.");
+                alert.setContentText("La matricula debe contener 4 números y 3 letras mayusculas.");
+                alert.showAndWait();
             }
         } else { //Mostramos mensaje de error que el campo matricula esta vacio
             Alert alerta = new Alert(Alert.AlertType.WARNING);
@@ -125,7 +136,6 @@ public class CochesController {
             alerta.showAndWait();
         }
     }
-
 
     @FXML
     void onClicModificar(ActionEvent event) {
@@ -147,6 +157,7 @@ public class CochesController {
                 txtMatricula.clear();
                 txtMarca.clear();
                 txtModelo.clear();
+                fxTipo.getSelectionModel().clearSelection();
                 cargarCoches();
             } else {
                 Alert alerta = new Alert(Alert.AlertType.ERROR);
@@ -164,35 +175,42 @@ public class CochesController {
         }
     }
 
-
     @FXML
     void onClicNuevo(ActionEvent event) {
         String marca = txtMarca.getText();
         String modelo = txtModelo.getText();
         String matricula = txtMatricula.getText();
         String tipo = fxTipo.getSelectionModel().getSelectedItem();
+        String regexMatricula = "^[0-9]{4}[A-Z]{3}$";
 
 
         if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty() && !tipo.isEmpty()) {
+            if (matricula.matches(regexMatricula)) {
 
-            Coches nuevoCoche = new Coches(matricula, marca, modelo, tipo);
+                Coches nuevoCoche = new Coches(matricula, marca, modelo, tipo);
 
-            cochesDAO.insertarCoche(nuevoCoche);
+                cochesDAO.insertarCoche(nuevoCoche);
 
-            // Coche creado
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Coche Añadido");
-            alert.setHeaderText(null);
-            alert.setContentText("El coche ha sido añadido correctamente.");
-            alert.showAndWait();
+                // Coche creado
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Coche Añadido");
+                alert.setHeaderText(null);
+                alert.setContentText("El coche ha sido añadido correctamente.");
+                alert.showAndWait();
 
 
-            txtMarca.clear();
-            txtModelo.clear();
-            txtMatricula.clear();
-
-            cargarCoches();
-        } else {
+                txtMarca.clear();
+                txtModelo.clear();
+                txtMatricula.clear();
+                fxTipo.getSelectionModel().clearSelection();
+                cargarCoches();
+            }  else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Matricula incorrecta.");
+                alert.setContentText("La matricula debe contener 4 números y 3 letras mayusculas.");
+                alert.showAndWait();
+            }
+        }else {
             // Alertamos que hay campos vacios
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Campos Vacíos");
@@ -219,6 +237,7 @@ public class CochesController {
         txtMarca.clear();
         txtModelo.clear();
         txtMatricula.clear();
+        fxTipo.getSelectionModel().clearSelection();
 
         // Mostramos alerta de confirmacion
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -234,6 +253,7 @@ public class CochesController {
             txtMatricula.setText(coche.matricula);
             txtModelo.setText(coche.modelo);
             txtMarca.setText(coche.marca);
+            fxTipo.getSelectionModel().getSelectedItem();
         } else {
             System.out.println("No se ha seleccionado ningún coche.");
         }
