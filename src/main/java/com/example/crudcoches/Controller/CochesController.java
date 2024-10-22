@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 
 import java.util.List;
@@ -73,14 +74,10 @@ public class CochesController {
 
             // Configuramos las columnas de la tabla
 
-            colMatricula.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getMatricula()));
-            colMarca.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getMarca()));
-            colModelo.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getModelo()));
-            colTipo.setCellValueFactory(cellData ->
-                    new SimpleStringProperty(cellData.getValue().getTipo()));
+            colMatricula.setCellValueFactory(new PropertyValueFactory<>("matricula"));
+            colMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
+            colModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
+            colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
 
             cargarCoches();
         } else {
@@ -250,10 +247,10 @@ public class CochesController {
     public void onClickedMouse(javafx.scene.input.MouseEvent mouseEvent) {
         Coches coche =idTablaCoches.getSelectionModel().getSelectedItem();
         if (coche != null) {
-            txtMatricula.setText(coche.matricula);
-            txtModelo.setText(coche.modelo);
-            txtMarca.setText(coche.marca);
-            fxTipo.getSelectionModel().getSelectedItem();
+            txtMatricula.setText(coche.getMatricula());
+            txtModelo.setText(coche.getModelo());
+            txtMarca.setText(coche.getMarca());
+            fxTipo.getSelectionModel().select(coche.getTipo());
         } else {
             System.out.println("No se ha seleccionado ningún coche.");
         }
