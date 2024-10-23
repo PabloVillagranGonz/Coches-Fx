@@ -45,6 +45,15 @@ public class CochesDAO {
         return modifiedCount > 0;
     }
 
+    public boolean comprobarMatricula(String matricula) {
+        try {
+            Document doc = collection.find(new Document("matricula", matricula)).first();
+            return doc != null; // Devuelve true si existe, false si no existe
+        } catch (Exception e) {
+            System.out.println("Error al comprobar matrícula: " + e.getMessage());
+            return false;
+        }
+    }
     public List<Coches> cargarCoches() {
         List<Coches> cochesList = new ArrayList<>();
         try {
@@ -63,5 +72,4 @@ public class CochesDAO {
         }
         return cochesList;
     }
-
 }

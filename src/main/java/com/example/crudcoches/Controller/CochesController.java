@@ -87,12 +87,12 @@ public class CochesController {
             System.out.println("No se pudo establecer la conexión a la base de datos.");
         }
     }
+
     private void cargarCoches() {
         coches = cochesDAO.cargarCoches(); // Cargamos los cochesDAO
         idTablaCoches.getItems().clear(); // Limpiamos la tabla antes de seguir
         idTablaCoches.getItems().addAll(coches); // Añadimos todos los coches a la tabla
     }
-
 
     @FXML
     void onClicEliminar(ActionEvent event) {
@@ -128,7 +128,6 @@ public class CochesController {
         }
     }
 
-
     @FXML
     void onClicModificar(ActionEvent event) {
         String matricula = txtMatricula.getText();
@@ -149,6 +148,7 @@ public class CochesController {
                 txtMatricula.clear();
                 txtMarca.clear();
                 txtModelo.clear();
+                fxTipo.getSelectionModel().clearSelection();
                 cargarCoches();
             } else {
                 Alert alerta = new Alert(Alert.AlertType.ERROR);
@@ -166,7 +166,6 @@ public class CochesController {
         }
     }
 
-
     @FXML
     void onClicNuevo(ActionEvent event) {
         String marca = txtMarca.getText();
@@ -175,25 +174,34 @@ public class CochesController {
         String tipo = fxTipo.getSelectionModel().getSelectedItem();
 
 
-        if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty() && !tipo.isEmpty()) {
+        if (!marca.isEmpty() && !modelo.isEmpty() && !matricula.isEmpty() && tipo != null) {
+            if (!cochesDAO.comprobarMatricula(matricula)) {
 
-            Coches nuevoCoche = new Coches(matricula, marca, modelo, tipo);
+                Coches nuevoCoche = new Coches(matricula, marca, modelo, tipo);
 
-            cochesDAO.insertarCoche(nuevoCoche);
+                cochesDAO.insertarCoche(nuevoCoche);
 
-            // Coche creado
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Coche Añadido");
-            alert.setHeaderText(null);
-            alert.setContentText("El coche ha sido añadido correctamente.");
-            alert.showAndWait();
+                // Coche creado
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Coche Añadido");
+                alert.setHeaderText(null);
+                alert.setContentText("El coche ha sido añadido correctamente.");
+                alert.showAndWait();
 
 
-            txtMarca.clear();
-            txtModelo.clear();
-            txtMatricula.clear();
+                txtMarca.clear();
+                txtModelo.clear();
+                txtMatricula.clear();
+                fxTipo.getSelectionModel().clearSelection();
 
-            cargarCoches();
+                cargarCoches();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Matricula existente");
+                alert.setHeaderText(null);
+                alert.setContentText("Por favor, cambie de matricula, esa ya existe.");
+                alert.showAndWait();
+            }
         } else {
             // Alertamos que hay campos vacios
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -221,6 +229,7 @@ public class CochesController {
         txtMarca.clear();
         txtModelo.clear();
         txtMatricula.clear();
+        fxTipo.getSelectionModel().clearSelection();
 
         // Mostramos alerta de confirmacion
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
